@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jelajah Hak dan Kewajiban (Dengan Musik)</title>
+    <style>
+        /* ================= KETENTUAN CSS & DESAIN ================= */
+        :root {
+            --primary: #FF9AA2;
+            --secondary: #FFB7B2;
+            --tertiary: #FFDAC1;
+            --quaternary: #E2F0CB;
+            --quinary: #B5EAD7;
+            --senary: #C7CEEA;
+            --text-dark: #4A4A4A;
+            --bg-light: #F9F9F9;
+            --white: #FFFFFF;
+            --correct: #84E89B;
+            --wrong: #FF8484;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', 'Quicksand', 'Nunito', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* HEADER & PROGRESS */
+        header {
+            background-color: var(--white);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left, .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-icon {
+            background: var(--tertiary);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover { transform: scale(1.1); }
+
+        .progress-container {
+            width: 200px;
+            background: #eee;
+            border-radius: 20px;
+            height: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--quinary);
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            font-weight: bold;
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 0;
+            line-height: 15px;
+        }
+
+        /* SIDEBAR NAV (Desktop) & FULLSCREEN NAV (Mobile) */
+        #nav-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 250px;
+            height: 100vh;
+            background: var(--white);
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 200;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        #nav-menu.active { left: 0; }
+        .nav-close { text-align: right; margin-bottom: 20px; }
+        .nav-item {
+            display: block;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .nav-item:hover { background: var(--tertiary); }
+        .nav-item.locked { opacity: 0.5; cursor: not-allowed; }
+
+        /* MAIN CONTENT AREA */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section-page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section-page.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* TYPOGRAPHY & CARDS */
+        h1, h2, h3 { text-align: center; margin-bottom: 15px; color: var(--text-dark); }
+        .subtitle { text-align: center; font-size: 1.2rem; margin-bottom: 20px; font-style: italic; }
+        
+        .card-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 20px;
+            width: 280px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .card-emoji { font-size: 60px; margin-bottom: 10px; }
+        .card-title { font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; }
+
+        /* BUTTONS */
+        .btn {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            display: inline-block;
+            margin: 10px;
+        }
+        .btn:hover { background: var(--secondary); transform: scale(1.05); }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: var(--white); }
+
+        /* BADGES */
+        .badge-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; }
+        .badge {
+            width: 100px;
+            text-align: center;
+            filter: grayscale(100%);
+            opacity: 0.5;
+            transition: all 0.5s;
+        }
+        .badge.earned { filter: grayscale(0%); opacity: 1; transform: scale(1.1); animation: pop 0.5s ease; }
+        .badge-icon { font-size: 40px; margin-bottom: 5px; }
+        .badge-name { font-size: 12px; font-weight: bold; }
+        @keyframes pop { 0% { transform: scale(0.8); } 50% { transform: scale(1.3); } 100% { transform: scale(1.1); } }
+
+        /* FOOTER CONTROLS */
+        footer {
+            background: var(--white);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 -4px 6px rgba(0,0,0,0.05);
+        }
+
+        /* GAMES & INTERACTIVE */
+        .interactive-area { background: var(--quaternary); padding: 20px; border-radius: 15px; margin-top: 20px; text-align: center; }
+        .feedback { font-size: 1.2rem; font-weight: bold; margin-top: 15px; min-height: 30px; }
+        
+        .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .match-col { display: flex; flex-direction: column; gap: 10px; }
+        .match-item { background: var(--white); padding: 15px; border-radius: 10px; cursor: pointer; border: 2px solid #ccc; }
+        .match-item.selected { border-color: var(--primary); background: var(--tertiary); }
+        .match-item.matched { background: var(--correct); border-color: #38a169; color: #fff; cursor: default; }
+        .match-item.wrong { animation: shake 0.5s; border-color: var(--wrong); }
+
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+
+        /* EVALUASI */
+        .quiz-container { background: var(--white); padding: 20px; border-radius: 15px; }
+        .quiz-option { display: block; width: 100%; text-align: left; background: var(--bg-light); border: 2px solid #ddd; padding: 12px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
+        .quiz-option:hover { background: var(--senary); }
+        .quiz-option.selected { background: var(--quinary); border-color: #2b6cb0; }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .match-grid { grid-template-columns: 1fr; }
+            .header-right .btn-icon { display: none; }
+            .progress-container { width: 120px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= NAVIGASI & HEADER ================= -->
+    <header>
+        <div class="header-left">
+            <button class="btn-icon" onclick="toggleNav()" aria-label="Menu">☰</button>
+            <span style="font-weight:bold; font-size:1.2rem; color:var(--text-dark);">Jelajah Hak & Kewajiban</span>
+        </div>
+        <div class="header-right">
+            <div class="progress-container" aria-label="Progres Belajar">
+                <div class="progress-bar" id="progress-bar"></div>
+                <div class="progress-text" id="progress-text">0%</div>
+            </div>
+            <button class="btn-icon" id="btn-audio" onclick="toggleAudio()" aria-label="Suara Global">🔊</button>
+        </div>
+    </header>
+
+    <div id="nav-menu">
+        <div class="nav-close">
+            <button class="btn-icon" onclick="toggleNav()">✖</button>
+        </div>
+        <h3>Menu Petualangan</h3>
+        <div id="nav-items-container">
+            <!-- Nav items generated via JS -->
+        </div>
+    </div>
+
+    <!-- ================= KONTEN UTAMA ================= -->
+    <main id="main-content">
+        
+        <!-- 1. BERANDA -->
+        <section id="beranda" class="section-page active">
+            <h1>🌟 JELAJAH HAK DAN KEWAJIBAN 🌟</h1>
+            <p class="subtitle">“Petualangan Seru Menjadi Warga Negara yang Bertanggung Jawab”</p>
+            <div style="text-align:center; font-size: 100px; margin: 20px 0;">🏫👦👧🎒</div>
+            <div style="text-align: center;">
+                <button class="btn" onclick="goToPage('tujuan')">🚀 MULAI PETUALANGAN</button>
+                <button class="btn btn-outline" onclick="goToPage('peta')">🗺️ PETA PETUALANGAN</button>
+            </div>
+        </section>
+
+        <!-- 2. PETA PETUALANGAN -->
+        <section id="peta" class="section-page">
+            <h1>🗺️ Peta Petualangan</h1>
+            <p class="subtitle">Klik stasiun untuk memulai misimu!</p>
+            <div class="card-container" id="map-container">
+                <!-- Map cards generated via JS -->
+            </div>
+        </section>
+
+        <!-- 3. TUJUAN PEMBELAJARAN -->
+        <section id="tujuan" class="section-page">
+            <h1>🎯 MISI PEMBELAJARAN</h1>
+            <p class="subtitle">“Apa yang akan kamu pelajari hari ini?”</p>
+            <div class="card-container">
+                <div class="card" style="width: 100%; text-align:left;">
+                    <p>Setelah menggunakan media ini, kamu diharapkan mampu:</p>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li>🎁 Menjelaskan pengertian hak dan contohnya.</li>
+                        <li>🛡️ Menjelaskan pengertian kewajiban dan contohnya di rumah, sekolah, masyarakat.</li>
+                        <li>🇮🇩 Mengenali hak warga negara dalam UUD 1945.</li>
+                        <li>📜 Mengenali kewajiban warga negara dalam UUD 1945.</li>
+                        <li>⚖️ Menjelaskan hubungan keseimbangan antara hak dan kewajiban.</li>
+                    </ul>
+                </div>
+            </div>
+            <div style="text-align:center; margin-top:20px;">
+                <button class="btn" onclick="goToPage('hak')">🚀 MULAI MISI BELAJAR</button>
+            </div>
+        </section>
+
+        <!-- 4. DUNIA HAK -->
+        <section id="hak" class="section-page">
+            <h1>🎁 DUNIA HAK</h1>
+            <p class="subtitle">“Apa yang seharusnya kita terima?”</p>
+            <div class="card" style="width: 100%; background: var(--senary);">
+                <h3>Pengertian Hak</h3>
+                <p style="font-size:1.2rem;"><strong>"Hak adalah sesuatu yang seharusnya kita terima atau dapatkan."</strong></p>
+            </div>
+            
+            <h3 style="margin-top:20px;">Contoh Hak Sehari-hari</h3>
+            <div class="card-container">
+                <div class="card"><div class="card-emoji">📖</div><p>Mendapatkan ilmu pengetahuan.</p></div>
+                <div class="card"><div class="card-emoji">🛡️</div><p>Mendapatkan perlindungan.</p></div>
+                <div class="card"><div class="card-emoji">🙋</div><p>Menyampaikan pendapat.</p></div>
+            </div>
+            <p style="text-align:center; margin-top:15px; font-style:italic;">Contoh: "Sebagai siswa, kita memiliki hak untuk mendapatkan pembelajaran dari guru."</p>
+
+            <div class="interactive-area">
+                <h3>🔎 TEMUKAN HAK!</h3>
+                <p>Manakah gambar yang menunjukkan pelaksanaan hak?</p>
+                <div class="card-container" style="margin-top:15px;">
+                    <div class="card" onclick="checkHakAnswer(false)"><div class="card-emoji">🧹</div><p>Menyapu kelas</p></div>
+                    <div class="card" onclick="checkHakAnswer(true)"><div class="card-emoji">👨‍🏫</div><p>Mendengarkan penjelasan guru</p></div>
+                </div>
+                <div id="hak-feedback" class="feedback"></div>
+            </div>
+        </section>
+
+        <!-- 5. DUNIA KEWAJIBAN -->
+        <section id="kewajiban" class="section-page">
+            <h1>🛡️ DUNIA KEWAJIBAN</h1>
+            <p class="subtitle">“Apa yang harus kita lakukan?”</p>
+            <div class="card" style="width: 100%; background: var(--quinary);">
+                <h3>Pengertian Kewajiban</h3>
+                <p style="font-size:1.2rem;"><strong>"Kewajiban adalah sesuatu yang harus kita lakukan dengan penuh tanggung jawab."</strong></p>
+            </div>
+
+            <h3 style="margin-top:20px;">Contoh Kewajiban</h3>
+            <div class="card-container">
+                <div class="card"><div class="card-emoji">🏡</div><p>Mematuhi aturan di rumah, sekolah, masyarakat.</p></div>
+                <div class="card"><div class="card-emoji">🤝</div><p>Menghormati orang lain.</p></div>
+                <div class="card"><div class="card-emoji">📚</div><p>Belajar dengan sungguh-sungguh.</p></div>
+            </div>
+            <p style="text-align:center; margin-top:15px; font-style:italic;">Contoh: "Jika kita memiliki hak belajar dengan nyaman, kita berkewajiban menjaga ketertiban kelas."</p>
+
+            <div class="interactive-area">
+                <h3>🧩 PASANGKAN KEWAJIBANNYA!</h3>
+                <p>Klik situasi, lalu klik kewajiban yang sesuai.</p>
+                <div class="match-grid" id="kewajiban-match">
+                    <div class="match-col" id="kw-left"></div>
+                    <div class="match-col" id="kw-right"></div>
+                </div>
+                <div id="kw-feedback" class="feedback"></div>
+                <button class="btn btn-outline" style="margin-top:10px; display:none;" id="kw-reset" onclick="initKewajibanMatch()">Ulangi Permainan</button>
+            </div>
+        </section>
+
+        <!-- 6. HAK DALAM UUD 1945 -->
+        <section id="hak_uud" class="section-page">
+            <h1>🇮🇩 HAK KITA, JAMINAN NEGARA</h1>
+            <p class="subtitle">UUD 1945 menjamin berbagai hak warga negara.</p>
+            
+            <div class="card-container">
+                <div class="card" style="width:100%; text-align:left;">
+                    <h3>1. Hak Mendapatkan Pendidikan</h3>
+                    <p><strong>Pasal 31 ayat (1):</strong> “Setiap warga negara berhak mendapatkan pendidikan.”</p>
+                    <div style="font-size:30px; margin-top:10px;">🏫📖</div>
+                </div>
+                <div class="card" style="width:100%; text-align:left;">
+                    <h3>2. Hak Menyampaikan Pendapat</h3>
+                    <p><strong>Pasal 28E ayat (3):</strong> “Setiap orang berhak atas kebebasan berserikat, berkumpul, dan mengeluarkan pendapat.”</p>
+                    <div style="font-size:30px; margin-top:10px;">🗣️🙋</div>
+                </div>
+                <div class="card" style="width:100%; text-align:left;">
+                    <h3>3. Hak Mendapat Perlakuan Sama</h3>
+                    <p><strong>Pasal 27 ayat (1):</strong> “Segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan...”</p>
+                    <div style="font-size:30px; margin-top:10px;">⚖️🏛️</div>
+                </div>
+            </div>
+
+            <div class="interactive-area">
+                <h3>🎯 KUIS MINI</h3>
+                <p>Pasal berapa yang menjamin hak mendapatkan pendidikan?</p>
+                <button class="btn btn-outline" onclick="showFeedback('hak_uud_fb', false, '💡 Belum tepat. Coba lihat angka 31.')">Pasal 27 (1)</button>
+                <button class="btn btn-outline" onclick="showFeedback('hak_uud_fb', true, '🎉 Benar! Pasal 31 ayat (1).', 'sahabat')">Pasal 31 (1)</button>
+                <div id="hak_uud_fb" class="feedback"></div>
+            </div>
+        </section>
+
+        <!-- 7. KEWAJIBAN DALAM UUD 1945 -->
+        <section id="kewajiban_uud" class="section-page">
+            <h1>📜 KEWAJIBAN WARGA NEGARA</h1>
+            <p class="subtitle">“Selain hak, kita juga memiliki kewajiban.”</p>
+
+            <div class="card-container">
+                <div class="card"><h3>Pendidikan Dasar</h3><p><strong>Pasal 31 ayat (2)</strong></p><p>Wajib mengikuti pendidikan dasar.</p></div>
+                <div class="card"><h3>Junjung Hukum</h3><p><strong>Pasal 27 ayat (1)</strong></p><p>Wajib menjunjung hukum & pemerintahan.</p></div>
+                <div class="card"><h3>Bela Negara</h3><p><strong>Pasal 27 ayat (3)</strong></p><p>Wajib ikut upaya pembelaan negara.</p></div>
+                <div class="card"><h3>Hormati Orang Lain</h3><p><strong>Pasal 28J ayat (1)</strong></p><p>Wajib menghormati hak asasi orang lain.</p></div>
+            </div>
+
+            <div class="interactive-area">
+                <h3>🎯 PASAL YANG TEPAT</h3>
+                <p id="kuud-q">Mematuhi rambu lalu lintas adalah contoh pelaksanaan kewajiban menjunjung hukum. Pasal berapakah ini?</p>
+                <div id="kuud-opts"></div>
+                <div id="kuud-fb" class="feedback"></div>
+                <button class="btn" style="margin-top:10px;" onclick="nextKuud()">Petunjuk 💡</button>
+            </div>
+        </section>
+
+        <!-- 8. KESEIMBANGAN HAK DAN KEWAJIBAN -->
+        <section id="seimbang" class="section-page">
+            <h1>⚖️ HAK DAN KEWAJIBAN HARUS SEIMBANG</h1>
+            <p class="subtitle">Hak baru dapat kita nikmati secara utuh jika kita dan orang lain melaksanakan kewajiban dengan tanggung jawab.</p>
+
+            <div class="card-container">
+                <div class="card" onclick="flipCard(this, 'Hak: Belajar dengan baik.<br><br>Kewajiban: Tertib di kelas.')">
+                    <div class="card-emoji">🏫</div>
+                    <h3>Di Sekolah</h3>
+                    <p style="font-size:12px;">(Klik untuk melihat)</p>
+                    <div class="flip-content" style="display:none; margin-top:10px; font-weight:bold; color:var(--primary);"></div>
+                </div>
+                <div class="card" onclick="flipCard(this, 'Hak: Kasih sayang.<br><br>Kewajiban: Membantu keluarga.')">
+                    <div class="card-emoji">🏡</div>
+                    <h3>Di Rumah</h3>
+                    <p style="font-size:12px;">(Klik untuk melihat)</p>
+                    <div class="flip-content" style="display:none; margin-top:10px; font-weight:bold; color:var(--primary);"></div>
+                </div>
+                <div class="card" onclick="flipCard(this, 'Hak: Lingkungan bersih.<br><br>Kewajiban: Menjaga kebersihan.')">
+                    <div class="card-emoji">🌳</div>
+                    <h3>Di Lingkungan</h3>
+                    <p style="font-size:12px;">(Klik untuk melihat)</p>
+                    <div class="flip-content" style="display:none; margin-top:10px; font-weight:bold; color:var(--primary);"></div>
+                </div>
+            </div>
+
+            <div class="interactive-area">
+                <h3>💭 Pertanyaan Reflektif</h3>
+                <p>Menurutmu, mengapa hak dan kewajiban perlu dilaksanakan secara seimbang?</p>
+                <button class="btn btn-outline" style="display:block; width:100%; margin:5px 0;" onclick="showFeedback('seimbang-fb', false, '💡 Belum tepat. Hak orang lain juga penting.')">Agar kita bisa menuntut hak sebanyak-banyaknya.</button>
+                <button class="btn btn-outline" style="display:block; width:100%; margin:5px 0;" onclick="showFeedback('seimbang-fb', true, '🎉 Tepat! Keseimbangan menciptakan keharmonisan dan menghargai hak orang lain.', 'ahli')">Agar tercipta ketertiban, keharmonisan, dan tidak melanggar hak orang lain.</button>
+                <div id="seimbang-fb" class="feedback"></div>
+            </div>
+        </section>
+
+        <!-- 9. GAME EDUKASI -->
+        <section id="game" class="section-page">
+            <h1>🎮 ARENA PETUALANGAN</h1>
+            <p class="subtitle">“Buktikan bahwa kamu memahami hak dan kewajiban!”</p>
+            
+            <div style="text-align:center; margin-bottom:20px;">
+                <button class="btn" onclick="showGame(1)">Game 1: Kelompokkan</button>
+                <button class="btn" onclick="showGame(2)">Game 2: Pasangkan</button>
+                <button class="btn" onclick="showGame(3)">Game 3: Tebak Pasal</button>
+            </div>
+
+            <!-- Game 1 -->
+            <div id="game1-area" class="interactive-area" style="display:none;">
+                <h3>GAME 1: Temukan Hak atau Kewajiban</h3>
+                <p id="g1-item" style="font-size:1.5rem; font-weight:bold; margin:20px 0;">Mendapatkan pembelajaran dari guru.</p>
+                <div>
+                    <button class="btn" style="background:#FF9AA2;" onclick="ansG1('hak')">🎁 INI HAK</button>
+                    <button class="btn" style="background:#B5EAD7; color:#4A4A4A;" onclick="ansG1('kewajiban')">🛡️ INI KEWAJIBAN</button>
+                </div>
+                <div id="g1-fb" class="feedback"></div>
+                <p id="g1-score" style="margin-top:10px;"></p>
+            </div>
+
+            <!-- Game 2 -->
+            <div id="game2-area" class="interactive-area" style="display:none;">
+                <h3>GAME 2: Pasangkan Hak dan Kewajiban</h3>
+                <p>Temukan pasangan yang tepat antara hak dan kewajiban dalam situasi yang sama.</p>
+                <div class="match-grid" id="g2-grid"></div>
+                <div id="g2-fb" class="feedback"></div>
+            </div>
+
+            <!-- Game 3 -->
+            <div id="game3-area" class="interactive-area" style="display:none;">
+                <h3>GAME 3: Tebak Pasal</h3>
+                <p id="g3-q" style="font-size:1.2rem; font-weight:bold; margin:15px 0;"></p>
+                <div id="g3-opts"></div>
+                <div id="g3-fb" class="feedback"></div>
+                <p id="g3-progress" style="margin-top:10px;"></p>
+            </div>
+
+        </section>
+
+        <!-- 10. EVALUASI -->
+        <section id="evaluasi" class="section-page">
+            <h1>📝 MISI EVALUASI</h1>
+            <p class="subtitle">“Sudah siap menunjukkan pemahamanmu?”</p>
+            <div id="eval-intro" style="text-align:center;">
+                <p>Terdapat 20 soal (Pilihan Ganda, Benar/Salah, Mencocokkan).</p>
+                <button class="btn" onclick="startEvaluasi()">Mulai Evaluasi</button>
+            </div>
+            
+            <div id="eval-quiz" class="quiz-container" style="display:none;">
+                <h3 id="eval-qnum">Soal 1/20</h3>
+                <p id="eval-qtext" style="font-size:1.2rem; margin-bottom:15px;"></p>
+                <div id="eval-options"></div>
+                <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                    <button class="btn btn-outline" onclick="prevEval()">Sebelumnya</button>
+                    <button class="btn" onclick="nextEval()" id="btn-next-eval">Berikutnya</button>
+                </div>
+            </div>
+
+            <div id="eval-result" class="interactive-area" style="display:none;">
+                <h2 id="eval-title">🎉 EVALUASI SELESAI!</h2>
+                <div style="font-size:60px;" id="eval-emoji">🏆</div>
+                <h1 style="font-size:3rem; color:var(--primary);" id="eval-score-text">100</h1>
+                <p id="eval-detail" style="font-size:1.2rem;"></p>
+                <p id="eval-message" style="font-style:italic; margin:15px 0;"></p>
+                <button class="btn" onclick="startEvaluasi()">Ulangi Evaluasi</button>
+                <button class="btn btn-outline" onclick="goToPage('refleksi')">Lanjut ke Refleksi</button>
+            </div>
+        </section>
+
+        <!-- 11. REFLEKSI -->
+        <section id="refleksi" class="section-page">
+            <h1>💭 REFLEKSI PETUALANGAN</h1>
+            <p class="subtitle">“Yuk, ceritakan pengalaman belajarmu!”</p>
+            
+            <div class="card" style="width:100%; text-align:left;">
+                <p><strong>1. Bagaimana pengalaman belajarmu hari ini?</strong></p>
+                <select id="ref1" style="width:100%; padding:10px; margin-top:5px; border-radius:5px;">
+                    <option value="">-- Pilih --</option>
+                    <option>😄 Sangat menyenangkan</option>
+                    <option>🙂 Menyenangkan</option>
+                    <option>😐 Cukup menyenangkan</option>
+                    <option>😕 Masih sedikit bingung</option>
+                    <option>🙋 Saya masih membutuhkan bantuan</option>
+                </select>
+
+                <p style="margin-top:15px;"><strong>2. Materi mana yang paling kamu sukai?</strong></p>
+                <select id="ref2" style="width:100%; padding:10px; margin-top:5px; border-radius:5px;">
+                    <option value="">-- Pilih --</option>
+                    <option>🎁 Mengenal Hak</option>
+                    <option>🛡️ Mengenal Kewajiban</option>
+                    <option>🇮🇩 Hak dalam UUD 1945</option>
+                    <option>📜 Kewajiban dalam UUD 1945</option>
+                    <option>⚖️ Keseimbangan Hak dan Kewajiban</option>
+                    <option>🎮 Game Edukasi</option>
+                </select>
+
+                <p style="margin-top:15px;"><strong>3. Apa hal penting yang kamu pelajari hari ini?</strong></p>
+                <textarea id="ref3" rows="4" style="width:100%; padding:10px; margin-top:5px; border-radius:5px;" placeholder="Tuliskan jawabanmu di sini..."></textarea>
+                
+                <button class="btn" style="margin-top:15px; width:100%;" onclick="submitRefleksi()">💌 KIRIM REFLEKSI</button>
+                <div id="ref-feedback" class="feedback"></div>
+            </div>
+        </section>
+
+        <!-- 12. PROFIL PENGEMBANG -->
+        <section id="profil" class="section-page">
+            <h1>👩‍🏫 PROFIL PENGEMBANG</h1>
+            <div class="card-container">
+                <div class="card" style="width:100%; max-width:500px;">
+                    <div style="font-size:80px;">👩‍🏫</div>
+                    <h2>Ayu Kristiyaningsih, S.Pd.</h2>
+                    <p><strong>Jabatan:</strong> Guru Kelas 5</p>
+                    <p><strong>Instansi:</strong> SD Negeri Srondol Kulon 01</p>
+                    <p><strong>Tahun Pengembangan:</strong> 2026</p>
+                    <p><strong>Bidang:</strong> Pendidikan Sekolah Dasar</p>
+                    <p><strong>Mata Pelajaran:</strong> Pendidikan Pancasila / PKn</p>
+                    <hr style="margin:15px 0; border:1px solid var(--tertiary);">
+                    <p style="font-style:italic;">“Belajar bukan hanya tentang mengetahui sesuatu, tetapi juga tentang memahami dan menerapkannya dalam kehidupan sehari-hari.”</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 13. PENYELESAIAN -->
+        <section id="selesai" class="section-page">
+            <h1>🎉 PETUALANGAN SELESAI! 🎉</h1>
+            <div style="text-align:center; font-size:100px;">🎇🎓🏅</div>
+            <p class="subtitle">“Menjadi warga negara yang baik dimulai dari hal sederhana: memahami hak kita, melaksanakan kewajiban dengan tanggung jawab, dan menghormati hak orang lain.”</p>
+            
+            <div class="card" style="width:100%;">
+                <h3>Koleksi Lencanamu:</h3>
+                <div class="badge-container" id="final-badges">
+                    <!-- Badges rendered here -->
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:20px;">
+                <button class="btn" onclick="resetApp()">🔄 BELAJAR LAGI</button>
+                <button class="btn btn-outline" onclick="goToPage('beranda')">🏠 KEMBALI KE BERANDA</button>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- FOOTER NAV -->
+    <footer id="footer-nav">
+        <button class="btn btn-outline" onclick="navPrev()">← Kembali</button>
+        <button class="btn-icon" onclick="goToPage('beranda')" style="width:50px; height:50px;">🏠</button>
+        <button class="btn" onclick="navNext()">Lanjut →</button>
+    </footer>
+
+    <!-- ================= SCRIPT JAVASCRIPT ================= -->
+    <script>
+        // // DATA MATERI & HALAMAN
+        const pages = [
+            { id: 'beranda', title: '🏠 Beranda', section: 0 },
+            { id: 'peta', title: '🗺️ Peta Petualangan', section: 0 },
+            { id: 'tujuan', title: '🎯 Tujuan Pembelajaran', section: 1 },
+            { id: 'hak', title: '🎁 Mengenal Hak', section: 2, badge: 'penjelajah' },
+            { id: 'kewajiban', title: '🛡️ Mengenal Kewajiban', section: 3, badge: 'penjaga' },
+            { id: 'hak_uud', title: '🇮🇩 Hak dalam UUD 1945', section: 4 },
+            { id: 'kewajiban_uud', title: '📜 Kewajiban UUD 1945', section: 5, badge: 'sahabat' },
+            { id: 'seimbang', title: '⚖️ Keseimbangan', section: 6, badge: 'ahli' },
+            { id: 'game', title: '🎮 Game Edukasi', section: 7, badge: 'jagoan' },
+            { id: 'evaluasi', title: '📝 Evaluasi', section: 8, badge: 'juara' },
+            { id: 'refleksi', title: '💭 Refleksi', section: 9 },
+            { id: 'profil', title: '👩‍🏫 Profil Pengembang', section: 10 },
+            { id: 'selesai', title: '🎉 Selesai', section: 10 }
+        ];
+
+        const badgesDef = {
+            'penjelajah': { icon: '🏅', name: 'PENJELAJAH HAK' },
+            'penjaga': { icon: '🏅', name: 'PENJAGA KEWAJIBAN' },
+            'sahabat': { icon: '🏅', name: 'SAHABAT UUD 1945' },
+            'ahli': { icon: '🏅', name: 'AHLI KESEIMBANGAN' },
+            'jagoan': { icon: '🏅', name: 'JAGOAN EDUKASI' },
+            'juara': { icon: '🏆', name: 'JUARA TANGGUNG JAWAB' }
+        };
+
+        // STATE MANAGEMENT
+        let currentPageIndex = 0;
+        let completedSections = new Set();
+        let earnedBadges = new Set();
+        let audioEnabled = true;
+
+        // // AUDIO SYSTEM (Web Audio API)
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+        
+        // BACKGROUND MUSIC VARS
+        let bgmInterval = null;
+        let noteIndex = 0;
+        // Nada ceria sederhana (C4, E4, G4, C5, G4, E4)
+        const bgmNotes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63]; 
+
+        function initAudio() { 
+            if(!audioCtx) { 
+                audioCtx = new AudioContext(); 
+            } 
+        }
+        
+        function playBGMNote() {
+            if(!audioEnabled || !audioCtx || audioCtx.state === 'suspended') return;
+            
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            osc.type = 'sine'; // Suara lembut
+            osc.frequency.setValueAtTime(bgmNotes[noteIndex], audioCtx.currentTime);
+            
+            // Volume sangat pelan agar tidak mengganggu (0.03)
+            gainNode.gain.setValueAtTime(0.02, audioCtx.currentTime); 
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+            
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.4);
+            
+            noteIndex = (noteIndex + 1) % bgmNotes.length;
+        }
+
+        function playSound(type) {
+            if(!audioEnabled) return;
+            initAudio();
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            if(type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            } else if(type === 'wrong') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            } else if(type === 'badge') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(554, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            } else if(type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            }
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            document.getElementById('btn-audio').innerText = audioEnabled ? '🔊' : '🔇';
+            
+            if (audioEnabled) {
+                initAudio();
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+                if(!bgmInterval) bgmInterval = setInterval(playBGMNote, 500);
+            } else {
+                if(bgmInterval) { 
+                    clearInterval(bgmInterval); 
+                    bgmInterval = null; 
+                }
+            }
+        }
+
+        // // NAVIGASI & SISTEM PROGRES
+        function toggleNav() {
+            document.getElementById('nav-menu').classList.toggle('active');
+            playSound('click');
+        }
+
+        function renderNavAndMap() {
+            const navContainer = document.getElementById('nav-items-container');
+            const mapContainer = document.getElementById('map-container');
+            navContainer.innerHTML = '';
+            mapContainer.innerHTML = '';
+            
+            pages.forEach((p, idx) => {
+                // Nav Menu
+                if(p.id !== 'peta' && p.id !== 'selesai') {
+                    const nav = document.createElement('div');
+                    nav.className = 'nav-item';
+                    nav.innerText = p.title;
+                    nav.onclick = () => { goToPage(p.id); toggleNav(); };
+                    navContainer.appendChild(nav);
+                }
+                // Map
+                if(p.section > 0 && p.id !== 'selesai' && p.id !== 'profil') {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `<div class="card-emoji">${p.title.split(' ')[0]}</div><div class="card-title">${p.title.substring(p.title.indexOf(' ')+1)}</div>`;
+                    if(completedSections.has(p.section)) {
+                        card.innerHTML += `<div style="color:green; font-weight:bold;">✅ Selesai</div>`;
+                    }
+                    card.onclick = () => goToPage(p.id);
+                    mapContainer.appendChild(card);
+                }
+            });
+            updateProgress();
+        }
+
+        function goToPage(id) {
+            playSound('click');
+            document.querySelectorAll('.section-page').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            currentPageIndex = pages.findIndex(p => p.id === id);
+            
+            // Register progress
+            const pageObj = pages[currentPageIndex];
+            if(pageObj.section > 0) completedSections.add(pageObj.section);
+            
+            // Check badge
+            if(pageObj.badge && !earnedBadges.has(pageObj.badge)) {
+                earnedBadges.add(pageObj.badge);
+                playSound('badge');
+            }
+
+            renderNavAndMap();
+            window.scrollTo(0,0);
+            
+            // Footer visibility
+            document.getElementById('footer-nav').style.display = (id === 'beranda') ? 'none' : 'flex';
+            
+            if(id === 'selesai') renderFinalBadges();
+        }
+
+        function navNext() {
+            if(currentPageIndex < pages.length - 1) {
+                goToPage(pages[currentPageIndex + 1].id);
+            }
+        }
+
+        function navPrev() {
+            if(currentPageIndex > 0) {
+                goToPage(pages[currentPageIndex - 1].id);
+            }
+        }
+
+        function updateProgress() {
+            let pct = Math.floor((completedSections.size / 10) * 100);
+            if(pct > 100) pct = 100;
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('progress-text').innerText = 'Petualanganmu: ' + pct + '%';
+        }
+
+        function showFeedback(id, isCorrect, msg, badgeId = null) {
+            const fb = document.getElementById(id);
+            fb.innerHTML = msg;
+            fb.style.color = isCorrect ? 'green' : 'red';
+            if(isCorrect) {
+                playSound('correct');
+                if(badgeId && !earnedBadges.has(badgeId)) {
+                    earnedBadges.add(badgeId);
+                    playSound('badge');
+                }
+            } else {
+                playSound('wrong');
+            }
+        }
+
+        // // KONTEN INTERAKTIF HAK & KEWAJIBAN
+        function checkHakAnswer(isCorrect) {
+            showFeedback('hak-feedback', isCorrect, isCorrect ? '🎉 Hebat! Mendengarkan penjelasan guru adalah hak kita untuk mendapat ilmu.' : '💡 Belum tepat. Menyapu kelas adalah kewajiban kita.');
+        }
+
+        // Match Game Kewajiban
+        const kwPairs = [
+            { id:1, text: 'Mematuhi tata tertib kelas' },
+            { id:2, text: 'Menghormati guru dan teman' },
+            { id:3, text: 'Belajar dengan sungguh-sungguh' }
+        ];
+        let kwSelLeft = null, kwSelRight = null;
+
+        function initKewajibanMatch() {
+            const left = document.getElementById('kw-left');
+            const right = document.getElementById('kw-right');
+            left.innerHTML = ''; right.innerHTML = '';
+            document.getElementById('kw-feedback').innerHTML = '';
+            document.getElementById('kw-reset').style.display = 'none';
+            kwSelLeft = null; kwSelRight = null;
+
+            let leftArr = [...kwPairs].sort(()=>Math.random()-0.5);
+            let rightArr = [...kwPairs].sort(()=>Math.random()-0.5);
+
+            leftArr.forEach(item => {
+                let div = document.createElement('div');
+                div.className = 'match-item left-item';
+                div.innerText = 'Ilustrasi: ' + item.text;
+                div.dataset.id = item.id;
+                div.onclick = () => kwSelectLeft(div);
+                left.appendChild(div);
+            });
+            rightArr.forEach(item => {
+                let div = document.createElement('div');
+                div.className = 'match-item right-item';
+                div.innerText = 'Kewajiban: ' + item.text;
+                div.dataset.id = item.id;
+                div.onclick = () => kwSelectRight(div);
+                right.appendChild(div);
+            });
+        }
+
+        function kwSelectLeft(el) {
+            if(el.classList.contains('matched')) return;
+            playSound('click');
+            document.querySelectorAll('.left-item').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            kwSelLeft = el;
+            checkKwMatch();
+        }
+        function kwSelectRight(el) {
+            if(el.classList.contains('matched')) return;
+            playSound('click');
+            document.querySelectorAll('.right-item').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            kwSelRight = el;
+            checkKwMatch();
+        }
+        function checkKwMatch() {
+            if(kwSelLeft && kwSelRight) {
+                if(kwSelLeft.dataset.id === kwSelRight.dataset.id) {
+                    playSound('correct');
+                    kwSelLeft.classList.add('matched'); kwSelLeft.classList.remove('selected');
+                    kwSelRight.classList.add('matched'); kwSelRight.classList.remove('selected');
+                    document.getElementById('kw-feedback').innerHTML = '✨ Mantap! Pasangan tepat!';
+                    document.getElementById('kw-feedback').style.color = 'green';
+                    kwSelLeft = null; kwSelRight = null;
+                    if(document.querySelectorAll('.left-item:not(.matched)').length === 0) {
+                        document.getElementById('kw-feedback').innerHTML = '🚀 Luar biasa! Semua berhasil dipasangkan!';
+                        document.getElementById('kw-reset').style.display = 'inline-block';
+                    }
+                } else {
+                    playSound('wrong');
+                    kwSelLeft.classList.add('wrong'); kwSelRight.classList.add('wrong');
+                    document.getElementById('kw-feedback').innerHTML = '💡 Belum tepat. Coba cari pasangan lain!';
+                    document.getElementById('kw-feedback').style.color = 'red';
+                    setTimeout(() => {
+                        kwSelLeft.classList.remove('wrong', 'selected');
+                        kwSelRight.classList.remove('wrong', 'selected');
+                        kwSelLeft = null; kwSelRight = null;
+                    }, 800);
+                }
+            }
+        }
+
+        let kuudState = 0;
+        function nextKuud() {
+            const q = document.getElementById('kuud-q');
+            const opts = document.getElementById('kuud-opts');
+            const fb = document.getElementById('kuud-fb');
+            fb.innerHTML = '';
+            if(kuudState === 0) {
+                q.innerText = "Mengikuti upacara bendera dengan khidmat adalah salah satu bentuk...";
+                opts.innerHTML = `
+                    <button class="btn btn-outline" onclick="showFeedback('kuud-fb', false, '💡 Coba ingat tentang upaya membela negara.')">Pasal 31 (2)</button>
+                    <button class="btn btn-outline" onclick="showFeedback('kuud-fb', true, '🎉 Benar! Ikut serta bela negara (Pasal 27 ayat 3).')">Pasal 27 (3)</button>
+                `;
+                kuudState = 1;
+            } else {
+                q.innerText = "Tidak mengganggu teman yang sedang belajar sesuai dengan kewajiban...";
+                opts.innerHTML = `
+                    <button class="btn btn-outline" onclick="showFeedback('kuud-fb', true, '🎉 Tepat! Menghormati hak orang lain (Pasal 28J ayat 1).')">Pasal 28J (1)</button>
+                    <button class="btn btn-outline" onclick="showFeedback('kuud-fb', false, '💡 Ini tentang menghormati hak asasi orang lain.')">Pasal 27 (1)</button>
+                `;
+                kuudState = 0;
+            }
+        }
+
+        function flipCard(el, text) {
+            playSound('click');
+            const p = el.querySelector('.flip-content');
+            p.innerHTML = text;
+            p.style.display = p.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // // GAME EDUKASI
+        function showGame(num) {
+            playSound('click');
+            document.getElementById('game1-area').style.display = 'none';
+            document.getElementById('game2-area').style.display = 'none';
+            document.getElementById('game3-area').style.display = 'none';
+            document.getElementById(`game${num}-area`).style.display = 'block';
+            if(num === 1) initG1();
+            if(num === 2) initG2();
+            if(num === 3) initG3();
+        }
+
+        // G1
+        const g1Data = [
+            { text: 'Mendapatkan pembelajaran dari guru', type: 'hak' },
+            { text: 'Menghormati orang lain', type: 'kewajiban' },
+            { text: 'Mendapatkan perlindungan', type: 'hak' },
+            { text: 'Mematuhi tata tertib sekolah', type: 'kewajiban' },
+            { text: 'Menyampaikan pendapat', type: 'hak' },
+            { text: 'Belajar dengan sungguh-sungguh', type: 'kewajiban' }
+        ];
+        let g1Index = 0; let g1Score = 0;
+        function initG1() {
+            g1Data.sort(()=>Math.random()-0.5);
+            g1Index = 0; g1Score = 0;
+            document.getElementById('g1-score').innerText = '';
+            document.getElementById('g1-fb').innerText = '';
+            showG1Item();
+        }
+        function showG1Item() {
+            if(g1Index < g1Data.length) {
+                document.getElementById('g1-item').innerText = g1Data[g1Index].text;
+            } else {
+                document.getElementById('g1-item').innerText = "Permainan Selesai!";
+                document.getElementById('g1-score').innerText = `Skor kamu: ${g1Score} dari ${g1Data.length}`;
+            }
+        }
+        function ansG1(ans) {
+            if(g1Index >= g1Data.length) return;
+            if(ans === g1Data[g1Index].type) {
+                showFeedback('g1-fb', true, '⭐ Benar!'); g1Score++;
+            } else {
+                showFeedback('g1-fb', false, `💡 Salah, itu adalah ${g1Data[g1Index].type}.`);
+            }
+            g1Index++;
+            setTimeout(showG1Item, 1000);
+        }
+
+        // G2
+        const g2Data = [
+            { id:1, hak: 'Mendapatkan pembelajaran yang baik', kw: 'Mengikuti pembelajaran dengan tertib' },
+            { id:2, hak: 'Mendapatkan kasih sayang keluarga', kw: 'Menghormati dan membantu keluarga' },
+            { id:3, hak: 'Menikmati lingkungan bersih', kw: 'Menjaga kebersihan lingkungan' }
+        ];
+        let g2SelH = null, g2SelK = null;
+        function initG2() {
+            const grid = document.getElementById('g2-grid');
+            grid.innerHTML = '<div class="match-col" id="g2-h"></div><div class="match-col" id="g2-k"></div>';
+            const colH = document.getElementById('g2-h'); const colK = document.getElementById('g2-k');
+            document.getElementById('g2-fb').innerText = '';
+            
+            let arrH = [...g2Data].sort(()=>Math.random()-0.5);
+            let arrK = [...g2Data].sort(()=>Math.random()-0.5);
+
+            arrH.forEach(i => {
+                let d = document.createElement('div'); d.className = 'match-item h-item'; d.innerText = 'Hak: ' + i.hak;
+                d.onclick = () => { if(!d.classList.contains('matched')){ playSound('click'); document.querySelectorAll('.h-item').forEach(e=>e.classList.remove('selected')); d.classList.add('selected'); g2SelH = i.id; checkG2(); } };
+                colH.appendChild(d);
+            });
+            arrK.forEach(i => {
+                let d = document.createElement('div'); d.className = 'match-item k-item'; d.innerText = 'Kewajiban: ' + i.kw;
+                d.onclick = () => { if(!d.classList.contains('matched')){ playSound('click'); document.querySelectorAll('.k-item').forEach(e=>e.classList.remove('selected')); d.classList.add('selected'); g2SelK = i.id; checkG2(); } };
+                colK.appendChild(d);
+            });
+        }
+        function checkG2() {
+            if(g2SelH && g2SelK) {
+                if(g2SelH === g2SelK) {
+                    playSound('correct');
+                    document.querySelector('.h-item.selected').classList.add('matched', 'correct');
+                    document.querySelector('.k-item.selected').classList.add('matched', 'correct');
+                    document.getElementById('g2-fb').innerHTML = '<span style="color:green">Tepat sekali!</span>';
+                    if(document.querySelectorAll('.h-item:not(.matched)').length === 0) document.getElementById('g2-fb').innerHTML = '<span style="color:green">Semua berhasil dipasangkan!</span>';
+                } else {
+                    playSound('wrong');
+                    document.querySelector('.h-item.selected').classList.add('wrong');
+                    document.querySelector('.k-item.selected').classList.add('wrong');
+                    document.getElementById('g2-fb').innerHTML = '<span style="color:red">Belum tepat!</span>';
+                    setTimeout(()=>{ document.querySelectorAll('.wrong').forEach(e=>e.classList.remove('wrong', 'selected')); }, 800);
+                }
+                g2SelH = null; g2SelK = null;
+            }
+        }
+
+        // G3
+        const g3Data = [
+            { q: "Setiap warga negara berhak mendapatkan pendidikan.", ans: "Pasal 31 ayat (1)", opts: ["Pasal 27 ayat (1)", "Pasal 28E ayat (3)", "Pasal 31 ayat (1)", "Pasal 28J ayat (1)"] },
+            { q: "Wajib mengikuti pendidikan dasar.", ans: "Pasal 31 ayat (2)", opts: ["Pasal 31 ayat (2)", "Pasal 27 ayat (3)", "Pasal 27 ayat (1)", "Pasal 28J ayat (1)"] },
+            { q: "Segala warga negara bersamaan kedudukannya di dalam hukum...", ans: "Pasal 27 ayat (1)", opts: ["Pasal 28E ayat (3)", "Pasal 27 ayat (1)", "Pasal 31 ayat (1)", "Pasal 27 ayat (3)"] },
+            { q: "Setiap orang berhak atas kebebasan berserikat, berkumpul, dan mengeluarkan pendapat.", ans: "Pasal 28E ayat (3)", opts: ["Pasal 31 ayat (1)", "Pasal 27 ayat (1)", "Pasal 28J ayat (1)", "Pasal 28E ayat (3)"] },
+            { q: "Wajib menjunjung hukum dan pemerintahan.", ans: "Pasal 27 ayat (1)", opts: ["Pasal 27 ayat (1)", "Pasal 31 ayat (2)", "Pasal 28E ayat (3)", "Pasal 27 ayat (3)"] },
+            { q: "Wajib ikut serta dalam upaya pembelaan negara.", ans: "Pasal 27 ayat (3)", opts: ["Pasal 27 ayat (1)", "Pasal 28J ayat (1)", "Pasal 27 ayat (3)", "Pasal 31 ayat (1)"] },
+            { q: "Wajib menghormati hak asasi orang lain.", ans: "Pasal 28J ayat (1)", opts: ["Pasal 28J ayat (1)", "Pasal 28E ayat (3)", "Pasal 27 ayat (1)", "Pasal 31 ayat (2)"] },
+            { q: "Hak mendapatkan perlakuan yang sama di hadapan hukum.", ans: "Pasal 27 ayat (1)", opts: ["Pasal 27 ayat (1)", "Pasal 31 ayat (1)", "Pasal 28E ayat (3)", "Pasal 28J ayat (1)"] },
+            { q: "Hak menyampaikan pendapat saat diskusi kelas dilindungi oleh...", ans: "Pasal 28E ayat (3)", opts: ["Pasal 31 ayat (1)", "Pasal 28E ayat (3)", "Pasal 27 ayat (3)", "Pasal 31 ayat (2)"] },
+            { q: "Kewajiban menghormati teman yang sedang beribadah sesuai dengan...", ans: "Pasal 28J ayat (1)", opts: ["Pasal 28J ayat (1)", "Pasal 27 ayat (1)", "Pasal 31 ayat (1)", "Pasal 27 ayat (3)"] }
+        ];
+        let g3Index = 0; let g3Arr = [];
+        function initG3() {
+            g3Arr = [...g3Data].sort(()=>Math.random()-0.5);
+            g3Index = 0;
+            document.getElementById('g3-fb').innerText = '';
+            showG3();
+        }
+        function showG3() {
+            if(g3Index < g3Arr.length) {
+                const item = g3Arr[g3Index];
+                document.getElementById('g3-q').innerText = item.q;
+                document.getElementById('g3-progress').innerText = `Soal ${g3Index+1} dari 10`;
+                let optsHtml = '';
+                let optsShuffle = [...item.opts].sort(()=>Math.random()-0.5);
+                optsShuffle.forEach(o => {
+                    optsHtml += `<button class="btn btn-outline" style="display:block; width:100%; margin:5px 0;" onclick="ansG3('${o}', '${item.ans}')">${o}</button>`;
+                });
+                document.getElementById('g3-opts').innerHTML = optsHtml;
+            } else {
+                document.getElementById('g3-q').innerText = "Game 3 Selesai!";
+                document.getElementById('g3-opts').innerHTML = "";
+            }
+        }
+        function ansG3(ans, correct) {
+            if(ans === correct) {
+                showFeedback('g3-fb', true, '🎉 Benar!');
+                setTimeout(() => { document.getElementById('g3-fb').innerText=''; g3Index++; showG3(); }, 1000);
+            } else {
+                showFeedback('g3-fb', false, '💡 Belum tepat, coba lagi!');
+            }
+        }
+
+        // // EVALUASI (20 Soal)
+        const evalData = [
+            { q: "Sesuatu yang seharusnya kita terima atau dapatkan disebut...", opts: ["Hak", "Kewajiban", "Hadiah", "Hukuman"], ans: "Hak", type: "PG" },
+            { q: "Sesuatu yang harus kita lakukan dengan penuh tanggung jawab disebut...", opts: ["Hak", "Kewajiban", "Permintaan", "Perintah"], ans: "Kewajiban", type: "PG" },
+            { q: "Contoh pelaksanaan hak di sekolah adalah...", opts: ["Menyapu kelas", "Mendapatkan pembelajaran", "Membayar uang kas", "Mengerjakan PR"], ans: "Mendapatkan pembelajaran", type: "PG" },
+            { q: "Contoh pelaksanaan kewajiban di rumah adalah...", opts: ["Menonton TV", "Mendapat kasih sayang", "Mematuhi aturan rumah", "Mendapat uang jajan"], ans: "Mematuhi aturan rumah", type: "PG" },
+            { q: "Setiap warga negara berhak mendapatkan pendidikan dijamin oleh UUD 1945 pasal...", opts: ["Pasal 27 ayat (1)", "Pasal 28E ayat (3)", "Pasal 31 ayat (1)", "Pasal 31 ayat (2)"], ans: "Pasal 31 ayat (1)", type: "PG" },
+            { q: "Kewajiban ikut serta dalam upaya pembelaan negara diatur dalam UUD 1945 pasal...", opts: ["Pasal 27 ayat (1)", "Pasal 27 ayat (3)", "Pasal 28J ayat (1)", "Pasal 31 ayat (1)"], ans: "Pasal 27 ayat (3)", type: "PG" },
+            { q: "Hak untuk mengeluarkan pendapat diatur dalam UUD 1945 pasal...", opts: ["Pasal 28E ayat (3)", "Pasal 27 ayat (1)", "Pasal 31 ayat (1)", "Pasal 28J ayat (1)"], ans: "Pasal 28E ayat (3)", type: "PG" },
+            { q: "Mengapa hak dan kewajiban perlu dilaksanakan secara seimbang?", opts: ["Agar kita selalu menang", "Agar tercipta keharmonisan", "Agar tidak dihukum guru", "Agar bisa menuntut hak"], ans: "Agar tercipta keharmonisan", type: "PG" },
+            { q: "Jika kamu ingin lingkungan yang bersih (Hak), apa kewajibanmu?", opts: ["Menyuruh orang membersihkan", "Menjaga kebersihan lingkungan", "Membuang sampah sembarangan", "Pindah rumah"], ans: "Menjaga kebersihan lingkungan", type: "PG" },
+            { q: "Pasal yang mewajibkan kita menghormati hak asasi orang lain adalah...", opts: ["Pasal 27 ayat (1)", "Pasal 31 ayat (2)", "Pasal 28J ayat (1)", "Pasal 28E ayat (3)"], ans: "Pasal 28J ayat (1)", type: "PG" },
+            { q: "Hak adalah sesuatu yang harus kita lakukan.", opts: ["Benar", "Salah"], ans: "Salah", type: "BS" },
+            { q: "Kewajiban harus dilakukan dengan penuh tanggung jawab.", opts: ["Benar", "Salah"], ans: "Benar", type: "BS" },
+            { q: "Pasal 31 ayat (2) mewajibkan setiap warga negara mengikuti pendidikan dasar.", opts: ["Benar", "Salah"], ans: "Benar", type: "BS" },
+            { q: "Hak dan kewajiban tidak perlu dilakukan secara seimbang.", opts: ["Benar", "Salah"], ans: "Salah", type: "BS" },
+            { q: "Menjaga ketertiban di kelas adalah contoh kewajiban di sekolah.", opts: ["Benar", "Salah"], ans: "Benar", type: "BS" },
+            { q: "Pasangan yang tepat: Hak di sekolah...", opts: ["Mendapatkan pembelajaran yang baik", "Membantu keluarga", "Menjaga kebersihan", "Membela negara"], ans: "Mendapatkan pembelajaran yang baik", type: "PG" },
+            { q: "Pasangan yang tepat: Kewajiban di rumah...", opts: ["Menghormati dan membantu keluarga", "Mendapatkan kasih sayang", "Mendapatkan uang", "Bermain game"], ans: "Menghormati dan membantu keluarga", type: "PG" },
+            { q: "Kewajiban Bela Negara berpasangan dengan pasal...", opts: ["Pasal 27 ayat (3)", "Pasal 27 ayat (1)", "Pasal 31 ayat (1)", "Pasal 28J ayat (1)"], ans: "Pasal 27 ayat (3)", type: "PG" },
+            { q: "Hak Persamaan Kedudukan Hukum berpasangan dengan pasal...", opts: ["Pasal 27 ayat (1)", "Pasal 28E ayat (3)", "Pasal 31 ayat (2)", "Pasal 28J ayat (1)"], ans: "Pasal 27 ayat (1)", type: "PG" },
+            { q: "Hak Menyampaikan Pendapat berpasangan dengan pasal...", opts: ["Pasal 28E ayat (3)", "Pasal 31 ayat (1)", "Pasal 27 ayat (3)", "Pasal 28J ayat (1)"], ans: "Pasal 28E ayat (3)", type: "PG" }
+        ];
+        
+        let evalAnswers = new Array(20).fill(null);
+        let currentEval = 0;
+
+        function startEvaluasi() {
+            playSound('click');
+            evalAnswers.fill(null);
+            currentEval = 0;
+            document.getElementById('eval-intro').style.display = 'none';
+            document.getElementById('eval-result').style.display = 'none';
+            document.getElementById('eval-quiz').style.display = 'block';
+            showEvalQuestion();
+        }
+
+        function showEvalQuestion() {
+            const qData = evalData[currentEval];
+            document.getElementById('eval-qnum').innerText = `Soal ${currentEval + 1} dari 20`;
+            document.getElementById('eval-qtext').innerText = qData.q;
+            
+            let optsHtml = '';
+            qData.opts.forEach(opt => {
+                const sel = evalAnswers[currentEval] === opt ? 'selected' : '';
+                optsHtml += `<button class="quiz-option ${sel}" onclick="selectEval('${opt}')">${opt}</button>`;
+            });
+            document.getElementById('eval-options').innerHTML = optsHtml;
+
+            if(currentEval === 19) {
+                document.getElementById('btn-next-eval').innerText = "Selesai & Kumpulkan";
+            } else {
+                document.getElementById('btn-next-eval').innerText = "Berikutnya";
+            }
+        }
+
+        function selectEval(ans) {
+            playSound('click');
+            evalAnswers[currentEval] = ans;
+            showEvalQuestion();
+        }
+
+        function prevEval() {
+            playSound('click');
+            if(currentEval > 0) {
+                currentEval--;
+                showEvalQuestion();
+            }
+        }
+
+        function nextEval() {
+            playSound('click');
+            if(!evalAnswers[currentEval]) {
+                alert('Silakan pilih jawaban terlebih dahulu!');
+                return;
+            }
+            if(currentEval < 19) {
+                currentEval++;
+                showEvalQuestion();
+            } else {
+                finishEvaluasi();
+            }
+        }
+
+        function finishEvaluasi() {
+            document.getElementById('eval-quiz').style.display = 'none';
+            document.getElementById('eval-result').style.display = 'block';
+            
+            let score = 0;
+            let correctCount = 0;
+            evalAnswers.forEach((ans, idx) => {
+                if(ans === evalData[idx].ans) {
+                    score += 5;
+                    correctCount++;
+                }
+            });
+
+            document.getElementById('eval-score-text').innerText = score;
+            document.getElementById('eval-detail').innerText = `Jawaban Benar: ${correctCount} | Salah: ${20 - correctCount}`;
+            
+            if(score >= 80) {
+                playSound('correct');
+                document.getElementById('eval-emoji').innerText = '🏆';
+                document.getElementById('eval-message').innerText = "Hebat! Kamu sudah memahami banyak hal tentang hak dan kewajiban.";
+                earnedBadges.add('juara');
+            } else {
+                playSound('badge');
+                document.getElementById('eval-emoji').innerText = '💪';
+                document.getElementById('eval-message').innerText = "Terus berlatih, ya! Yuk, pelajari kembali bagian yang masih membingungkan.";
+            }
+        }
+
+        // // REFLEKSI
+        function submitRefleksi() {
+            const r1 = document.getElementById('ref1').value;
+            if(!r1) { alert("Pilih pengalaman belajarmu dulu ya!"); return; }
+            playSound('badge');
+            document.getElementById('ref-feedback').innerHTML = '<span style="color:green">Terima kasih atas refleksimu! Pendapatmu sangat berarti.</span>';
+            document.getElementById('ref1').disabled = true;
+            document.getElementById('ref2').disabled = true;
+            document.getElementById('ref3').disabled = true;
+        }
+
+        // // BADGES RENDER
+        function renderFinalBadges() {
+            playSound('correct');
+            const cont = document.getElementById('final-badges');
+            cont.innerHTML = '';
+            for(const [key, val] of Object.entries(badgesDef)) {
+                const isEarned = earnedBadges.has(key);
+                cont.innerHTML += `
+                    <div class="badge ${isEarned ? 'earned' : ''}">
+                        <div class="badge-icon">${isEarned ? val.icon : '🔒'}</div>
+                        <div class="badge-name">${val.name}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // // RESET
+        function resetApp() {
+            playSound('click');
+            completedSections.clear();
+            earnedBadges.clear();
+            goToPage('beranda');
+            document.getElementById('ref1').disabled = false;
+            document.getElementById('ref2').disabled = false;
+            document.getElementById('ref3').disabled = false;
+            document.getElementById('ref-feedback').innerHTML = '';
+        }
+
+        // INIT & BGM AUTOPLAY HANDLING
+        window.onload = () => {
+            renderNavAndMap();
+            
+            // Background music starts on first user interaction 
+            // (karena aturan browser modern tidak mengizinkan autoplay audio tanpa interaksi)
+            document.body.addEventListener('click', () => {
+                if(!audioCtx) {
+                    initAudio();
+                }
+                if(audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                if(audioEnabled && !bgmInterval) {
+                    bgmInterval = setInterval(playBGMNote, 500);
+                }
+            }, { once: true });
+        };
+    </script>
+</body>
+</html>
